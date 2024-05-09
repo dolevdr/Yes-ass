@@ -3,12 +3,17 @@ class VodOrders {
     this.orders = vodRecords;
   }
 
+  splittedRecords(order) {
+    const splitted = order.split(",");
+    const [userId, date, _, __, price] = splitted;
+    const dayMonth = date.substring(0, 7);
+    return { userId, dayMonth, price };
+  }
+
   createTotalCustomerUsage() {
     const dict = {};
     for (let order of this.orders) {
-      const splitted = order.split(",");
-      const [userId, date, _, __, price] = splitted;
-      const dayMonth = date.substring(0, 7);
+      const { userId, dayMonth, price } = this.splittedRecords(order);
       const key = userId + "," + dayMonth;
       if (key in dict) {
         dict[key] = dict[key].price + +price;
@@ -26,9 +31,7 @@ class VodOrders {
   createSummaryReport() {
     const dict = {};
     for (let order of this.orders) {
-      const splitted = order.split(",");
-      const [_, date, __, ___, price] = splitted;
-      const dayMonth = date.substring(0, 7);
+      const { dayMonth, price } = this.splittedRecords(order);
       if (dayMonth in dict) {
         dict[dayMonth] = {
           amount: dict[dayMonth].amount++,
